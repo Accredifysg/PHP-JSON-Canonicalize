@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Accredify\JsonCanonicalize\Exceptions\CanonicalizationException;
+use Accredify\JsonCanonicalize\JsonObject;
 use Accredify\JsonCanonicalize\JsonParser;
 
 uses()->group('parser');
@@ -32,25 +33,34 @@ it('rounds integers that exceed double precision, as ECMAScript does', function 
     expect((new JsonParser)->parse('9007199254740993'))->toBe(9007199254740992.0);
 });
 
-it('keeps object property names as strings', function () {
-    /** @var stdClass $parsed */
+it('keeps object property names as strings, in document order', function () {
+    /** @var JsonObject $parsed */
     $parsed = (new JsonParser)->parse('{"1":"a","10":"b","":"c"}');
 
-    // Reflection is the only API that hands back the true property names —
-    // get_object_vars() and an array cast fold "1" and "10" into integers.
-    $names = array_map(
-        static fn (ReflectionProperty $property): string => $property->getName(),
-        (new ReflectionObject($parsed))->getProperties(),
-    );
+    $names = [];
+    foreach ($parsed as $name => $value) {
+        $names[] = $name;
+    }
 
-    expect($names)->toBe(['1', '10', '']);
+    expect($names)->toBe(['1', '10', ''])
+        ->and($parsed->count())->toBe(3)
+        ->and($parsed->get('10'))->toBe('b');
+});
+
+it('accepts a property name that begins with a NUL byte', function () {
+    // PHP refuses such a name as a dynamic property, which is why parsed
+    // objects are a JsonObject rather than a stdClass.
+    /** @var JsonObject $parsed */
+    $parsed = (new JsonParser)->parse('{"\\u0000key":1}');
+
+    expect($parsed->has("\0key"))->toBeTrue();
 });
 
 it('tells an empty array from an empty object', function () {
     $parser = new JsonParser;
 
     expect($parser->parse('[]'))->toBe([])
-        ->and($parser->parse('{}'))->toBeInstanceOf(stdClass::class);
+        ->and($parser->parse('{}'))->toBeInstanceOf(JsonObject::class);
 });
 
 it('resolves string escapes', function () {
@@ -116,9 +126,19 @@ it('rejects an unescaped control character in a string', function () {
     (new JsonParser)->parse("\"a\nb\"");
 })->throws(CanonicalizationException::class, 'Unescaped control character U+000A in string');
 
-it('rejects input that is not valid UTF-8', function () {
-    (new JsonParser)->parse("\"\xC3\x28\"");
-})->throws(CanonicalizationException::class, 'Input is not valid UTF-8');
+it('rejects input that is not valid UTF-8', function (string $json) {
+    (new JsonParser)->parse($json);
+})->with([
+    'truncated sequence' => ["\"\xC3\x28\""],
+    // A surrogate encoded directly as UTF-8 rather than as a \u escape — still
+    // a lone surrogate, still refused (RFC 8785 §3.2.2.2).
+    'raw surrogate' => ["\"\xED\xA0\x80\""],
+    'overlong encoding' => ["\"\xC0\xAF\""],
+])->throws(CanonicalizationException::class, 'Input is not valid UTF-8');
+
+it('combines a surrogate pair at the top of the code space', function () {
+    expect((new JsonParser)->parse('"\\udbff\\udfff"'))->toBe("\u{10FFFF}");
+});
 
 it('reports the offset a parse failed at', function () {
     expect(fn () => (new JsonParser)->parse('{"a":1,"b":}'))
@@ -136,5 +156,5 @@ it('bounds nesting depth', function () {
 
 it('accepts the whitespace RFC 8259 allows', function () {
     expect((new JsonParser)->parse(" \t\r\n{ \"a\" : [ 1 , 2 ] }\t\n"))
-        ->toBeInstanceOf(stdClass::class);
+        ->toBeInstanceOf(JsonObject::class);
 });

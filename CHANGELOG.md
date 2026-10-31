@@ -27,13 +27,22 @@ test vectors.
   objects it silently keeps the last of a set of duplicate names, which
   RFC 8785 §3.1 forbids; and it keeps integers as PHP integers where JCS needs
   IEEE-754 doubles.
+- `JsonObject` — what the parser produces for a JSON object: property names in
+  document order, mapped to values. `stdClass` cannot stand in for it, because
+  PHP refuses a dynamic property whose name begins with a NUL byte and
+  `{"\u0000a":1}` is legal JSON that other implementations canonicalize
+  without comment.
 - `Serializer` — the writer: UTF-16 code unit property ordering, minimal
-  string escaping, ECMAScript numbers, no whitespace.
+  string escaping, ECMAScript numbers, no whitespace. Accepts `JsonObject`,
+  arrays, `stdClass`, `JsonSerializable` and scalars.
 - `Contracts\Canonicalizer` and `Exceptions\CanonicalizationException`.
 - Conformance harness over the cyberphone suite (a submodule at
   `tests/json-canonicalization/`): six document vectors checked against both
   `output/` and `outhex/`, plus the ES6 number set regenerated locally and
   checked by SHA-256 against the published checksums.
+- `tools/differential.js` and `tools/differential.php` — a differential check
+  against the suite's own JavaScript canonicalizer over pseudo-random
+  documents, which is how the NUL-leading property name above was found.
 
 ### Notes on behaviour
 

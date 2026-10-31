@@ -117,6 +117,12 @@ it('preserves unnormalized Unicode as it stands', function () {
     expect((new JCS)->canonicalize('{"a":"A\\u030a"}'))->toBe('{"a":"A'."\u{030A}".'"}');
 });
 
+it('canonicalizes a property name that begins with a NUL byte', function () {
+    // Legal JSON that PHP cannot hold as a stdClass property; the JS reference
+    // canonicalizer handles it, so this package must too.
+    expect((new JCS)->canonicalize('{"b":1,"\\u0000a":2}'))->toBe('{"\u0000a":2,"b":1}');
+});
+
 it('propagates a parse failure', function () {
     (new JCS)->canonicalize('{"a":1,"a":2}');
 })->throws(CanonicalizationException::class, 'Duplicate property name "a"');

@@ -68,6 +68,25 @@ JCS_NUMBER_LINES=10000000 composer test:conformance    # ~2 minutes
 JCS_NUMBER_LINES=100000000 composer test:conformance   # ~20 minutes
 ```
 
+## Beyond the fixed vectors
+
+Six documents cannot cover a specification this detailed.
+[`tools/differential.js`](../../tools/differential.js) generates pseudo-random
+documents from fragments chosen to collide with the rules — property names that
+sort differently in UTF-16 than in UTF-8, names PHP folds to integers, every
+escape class, the code points either side of the escaped range — canonicalizes
+them with the suite's own JavaScript implementation, and replays them here:
+
+```bash
+node tools/differential.js 5000 | php tools/differential.php
+# 5,000 cases, 0 disagreements
+```
+
+The seed is an argument, so a failing run is replayable. This is what surfaced
+the one bug the fixed vectors missed: a property name beginning with a NUL byte
+is legal JSON, but PHP refuses it as a dynamic property, so parsed objects
+cannot be `stdClass` — hence `JsonObject`.
+
 ## Score (v1.0.0) — full conformance
 
 | Check                              | Cases  | Passing |
@@ -81,9 +100,9 @@ JCS_NUMBER_LINES=100000000 composer test:conformance   # ~20 minutes
 The suite **gates CI** — every case passes, no allowlist.
 
 The four number checksums run by default cover the first 1 000, 10 000,
-100 000 and 1 000 000 values of the sequence. The two larger published
-prefixes, 10 000 000 and 100 000 000, also pass; they sit behind
-`JCS_NUMBER_LINES` because of their runtime, not their result.
+100 000 and 1 000 000 values of the sequence. The 10 000 000 prefix passes too
+— it sits behind `JCS_NUMBER_LINES` because of its two-minute runtime, not its
+result.
 
 The canonical output is frozen under SemVer: it is what Data Integrity's
 `ecdsa-jcs-2019` and `eddsa-jcs-2022` cryptosuites sign over, so changing it

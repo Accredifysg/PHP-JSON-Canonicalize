@@ -81,8 +81,11 @@ empty JSON object has to be written as `new stdClass`.
 
 The two halves are separately usable and separately tested:
 
-- `JsonParser` — strict RFC 8259 / I-JSON text → `stdClass` | `list` | `string`
-  | `float` | `bool` | `null`
+- `JsonParser` — strict RFC 8259 / I-JSON text → `JsonObject` | `list` |
+  `string` | `float` | `bool` | `null`
+- `JsonObject` — a parsed object: property names in document order, mapped to
+  values. It exists because PHP refuses a dynamic property whose name begins
+  with a NUL byte, so a `stdClass` cannot hold every legal JSON object.
 - `Serializer` — any of the above → canonical UTF-8
 - `Es6NumberFormatter` — one double → its ECMAScript `String()` form
 
@@ -122,9 +125,9 @@ differently:
 | `0.3333333333333333` | unchanged     | unchanged         |
 
 The rule is a pair of boundaries: fixed notation for `1e-6 ≤ |x| < 1e21`,
-exponential outside it. PHP goes exponential well before both. `Es6NumberFormatter`
-implements the layout directly and is checked against RFC 8785 Appendix B and
-against 100 million generated values.
+exponential outside it. PHP goes exponential well before both.
+`Es6NumberFormatter` implements the layout directly, and is checked against
+RFC 8785 Appendix B and against the suite's generated value sequence.
 
 ## Conformance
 
@@ -155,11 +158,23 @@ composer test:all          # both
 RFC 8785 is IETF, not W3C: there is no official test suite and no EARL report
 to file, so this is a self-reported score, reproducible with one command.
 
+Beyond the fixed vectors, [`tools/differential.js`](tools/differential.js)
+generates pseudo-random documents, canonicalizes them with the suite's own
+JavaScript implementation, and replays them through this one:
+
+```bash
+node tools/differential.js 5000 | php tools/differential.php
+# 5,000 cases, 0 disagreements
+```
+
+That is what surfaced the NUL-leading property name the fixed vectors never
+exercise.
+
 The ES6 number check is the substantive one. Rather than download the suite's
 4 GB file of 100 million values, the harness regenerates the sequence from the
-published algorithm and compares SHA-256 against the published checksums — so
-the default run proves a million values agree exactly, and
-`JCS_NUMBER_LINES=100000000` proves all hundred million.
+published algorithm and compares SHA-256 against the published checksums. The
+default run proves the first million values agree exactly; `JCS_NUMBER_LINES`
+raises that to the larger published prefixes, 10 million and 100 million.
 
 ## Scope
 

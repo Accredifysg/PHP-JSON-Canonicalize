@@ -3,7 +3,6 @@
 namespace Accredify\JsonCanonicalize;
 
 use Accredify\JsonCanonicalize\Exceptions\CanonicalizationException;
-use stdClass;
 
 /**
  * A strict RFC 8259 / I-JSON parser, written for canonicalization.
@@ -17,7 +16,7 @@ use stdClass;
  *
  * So this parser produces exactly the shapes the serializer needs:
  *
- *   object  -> stdClass   (property names kept verbatim, duplicates rejected)
+ *   object  -> JsonObject (property names kept verbatim, duplicates rejected)
  *   array   -> list<mixed>
  *   string  -> string     (UTF-8, escapes resolved, surrogate pairs combined)
  *   number  -> float      (always; RFC 8785 §3.1)
@@ -56,7 +55,7 @@ final class JsonParser
     /**
      * Parse a UTF-8 JSON document.
      *
-     * @return stdClass|list<mixed>|string|float|bool|null
+     * @return JsonObject|list<mixed>|string|float|bool|null
      *
      * @throws CanonicalizationException on anything that is not strictly valid I-JSON
      */
@@ -81,7 +80,7 @@ final class JsonParser
     }
 
     /**
-     * @return stdClass|list<mixed>|string|float|bool|null
+     * @return JsonObject|list<mixed>|string|float|bool|null
      */
     private function parseValue(int $depth): mixed
     {
@@ -102,12 +101,11 @@ final class JsonParser
         };
     }
 
-    private function parseObject(int $depth): stdClass
+    private function parseObject(int $depth): JsonObject
     {
         $this->offset++;
 
-        $object = new stdClass;
-        $seen = [];
+        $object = new JsonObject;
 
         $this->skipWhitespace();
         if ($this->peek() === '}') {
@@ -123,11 +121,10 @@ final class JsonParser
             }
 
             $name = $this->parseString();
-            if (isset($seen[$name])) {
+            if ($object->has($name)) {
                 // RFC 8785 §3.1: duplicates make the canonical form ambiguous.
                 throw $this->error(sprintf('Duplicate property name "%s"', $name));
             }
-            $seen[$name] = true;
 
             $this->skipWhitespace();
             if ($this->peek() !== ':') {
@@ -135,7 +132,7 @@ final class JsonParser
             }
             $this->offset++;
 
-            $object->{$name} = $this->parseValue($depth + 1);
+            $object->set($name, $this->parseValue($depth + 1));
 
             $this->skipWhitespace();
             $next = $this->peek();

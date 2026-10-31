@@ -22,7 +22,9 @@ use stdClass;
  * document that was built programmatically can be canonicalized without a
  * round-trip through `json_encode`. A PHP array serializes as a JSON array when
  * it is a list and as a JSON object otherwise, which leaves `[]` meaning an
- * empty array — pass `new stdClass` for an empty JSON object.
+ * empty array — pass `new stdClass` for an empty JSON object. (A `stdClass`
+ * cannot hold a property name beginning with a NUL byte; {@see JsonObject},
+ * which the parser produces, has no such limit.)
  *
  * @see https://www.rfc-editor.org/rfc/rfc8785#section-3.2
  */
@@ -65,8 +67,11 @@ final class Serializer
             is_array($value) => array_is_list($value)
                 ? $this->writeArray($value, $depth)
                 : $this->writeObject($this->arrayEntries($value), $depth),
-            $value instanceof stdClass => $this->writeObject($this->objectEntries($value), $depth),
+            $value instanceof JsonObject => $this->writeObject($this->arrayEntries($value->all()), $depth),
+            // Before the stdClass arm: a class may extend stdClass and still
+            // mean its jsonSerialize() to decide the shape.
             $value instanceof JsonSerializable => $this->write($value->jsonSerialize(), $depth + 1),
+            $value instanceof stdClass => $this->writeObject($this->arrayEntries(get_object_vars($value)), $depth),
             default => throw new CanonicalizationException(sprintf(
                 'Cannot canonicalize a value of type %s',
                 get_debug_type($value),
@@ -108,16 +113,6 @@ final class Serializer
         }
 
         return '{'.implode(',', $parts).'}';
-    }
-
-    /**
-     * Property names of a stdClass, in document order.
-     *
-     * @return list<array{string, mixed}>
-     */
-    private function objectEntries(stdClass $value): array
-    {
-        return $this->arrayEntries(get_object_vars($value));
     }
 
     /**

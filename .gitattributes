@@ -25,4 +25,5 @@
 /phpunit.xml      export-ignore
 /sonar-project.properties export-ignore
 /tests            export-ignore
+/tools            export-ignore
 /REFERENCES       export-ignore
