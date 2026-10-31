@@ -1,0 +1,19 @@
+name: Pull Request
+
+on:
+  pull_request:
+
+jobs:
+  ci:
+    name: Continuous Integration
+    uses: ./.github/workflows/ci.yml
+
+  badge:
+    needs: ci
+    name: Generate Coverage Badge
+    permissions:
+      # Write permission is required to commit badge changes.
+      contents: write
+    uses: ./.github/workflows/badge.yml
+    with:
+      coverage: ${{ needs.ci.outputs.coverage }}
