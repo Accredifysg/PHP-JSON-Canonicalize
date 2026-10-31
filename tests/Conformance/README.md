@@ -100,9 +100,11 @@ cannot be `stdClass` — hence `JsonObject`.
 The suite **gates CI** — every case passes, no allowlist.
 
 The four number checksums run by default cover the first 1 000, 10 000,
-100 000 and 1 000 000 values of the sequence. The 10 000 000 prefix passes too
-— it sits behind `JCS_NUMBER_LINES` because of its two-minute runtime, not its
-result.
+100 000 and 1 000 000 values of the sequence. The two larger published
+prefixes pass as well — all six checksums in the suite's table are reproduced,
+through the full 100 000 000 values. They sit behind `JCS_NUMBER_LINES`
+because of their runtime (about two minutes and nineteen minutes
+respectively), not their result.
 
 The canonical output is frozen under SemVer: it is what Data Integrity's
 `ecdsa-jcs-2019` and `eddsa-jcs-2022` cryptosuites sign over, so changing it

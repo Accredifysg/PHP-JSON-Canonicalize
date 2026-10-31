@@ -39,7 +39,9 @@ test vectors.
 - Conformance harness over the cyberphone suite (a submodule at
   `tests/json-canonicalization/`): six document vectors checked against both
   `output/` and `outhex/`, plus the ES6 number set regenerated locally and
-  checked by SHA-256 against the published checksums.
+  checked by SHA-256 against the published checksums. All six published
+  checksums are reproduced, through the full 100 000 000 values; the default
+  run stops at a million for the sake of its runtime.
 - `tools/differential.js` and `tools/differential.php` — a differential check
   against the suite's own JavaScript canonicalizer over pseudo-random
   documents, which is how the NUL-leading property name above was found.

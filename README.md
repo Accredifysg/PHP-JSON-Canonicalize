@@ -127,7 +127,8 @@ differently:
 The rule is a pair of boundaries: fixed notation for `1e-6 ≤ |x| < 1e21`,
 exponential outside it. PHP goes exponential well before both.
 `Es6NumberFormatter` implements the layout directly, and is checked against
-RFC 8785 Appendix B and against the suite's generated value sequence.
+RFC 8785 Appendix B and against all 100 million values of the suite's
+generated sequence.
 
 ## Conformance
 
@@ -174,7 +175,9 @@ The ES6 number check is the substantive one. Rather than download the suite's
 4 GB file of 100 million values, the harness regenerates the sequence from the
 published algorithm and compares SHA-256 against the published checksums. The
 default run proves the first million values agree exactly; `JCS_NUMBER_LINES`
-raises that to the larger published prefixes, 10 million and 100 million.
+raises that to the larger published prefixes, and all six checksums in the
+suite's table are reproduced — the full 100 million values, in about nineteen
+minutes.
 
 ## Scope
 
