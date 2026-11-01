@@ -1,0 +1,3 @@
+[submodule "tests/json-canonicalization"]
+	path = tests/json-canonicalization
+	url = https://github.com/cyberphone/json-canonicalization.git

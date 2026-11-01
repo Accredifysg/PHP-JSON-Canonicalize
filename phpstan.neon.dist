@@ -1,0 +1,13 @@
+parameters:
+    level: max
+    paths:
+        - src
+        - tests
+    excludePaths:
+        # Submodule (cyberphone/json-canonicalization) — third-party fixtures
+        # and reference implementations, not our code.
+        - tests/json-canonicalization/*
+        # Pest harness test files use $this binding to PHPUnit's TestCase at
+        # runtime, which PHPStan can't statically follow. The supporting
+        # classes (Harness, Vector, NumberSequence) are still analysed.
+        - tests/Conformance/Vectors/*

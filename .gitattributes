@@ -1,0 +1,29 @@
+# Force LF line endings for all text files. Overrides Windows checkout-time
+# CRLF conversion (core.autocrlf=true) so contributors on different platforms
+# see the same bytes regardless of local git config. JCS output is byte-exact
+# and the conformance fixtures are compared byte-for-byte, so this matters here.
+* text=auto eol=lf
+
+# Binary file types — never touch line endings.
+*.png binary
+*.jpg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+
+# Files that don't need to ship in the composer dist tarball.
+# These cut the size of `composer require` downloads, especially the
+# conformance submodule (tests/json-canonicalization/).
+/.editorconfig    export-ignore
+/.gitattributes   export-ignore
+/.gitignore       export-ignore
+/.gitmodules      export-ignore
+/.github          export-ignore
+/CHANGELOG.md     export-ignore
+/Pest.php         export-ignore
+/phpstan.neon.dist export-ignore
+/phpunit.xml      export-ignore
+/sonar-project.properties export-ignore
+/tests            export-ignore
+/tools            export-ignore
+/REFERENCES       export-ignore

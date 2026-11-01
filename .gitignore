@@ -1,0 +1,17 @@
+/vendor/
+/coverage/*
+!/coverage/badge.svg
+.phpunit.result.cache
+.idea
+.vscode
+/.phpunit.cache
+.DS_Store
+**/.DS_Store
+composer.lock
+
+# Locally generated ES6 number vectors (see tests/Jcs/README.md) — reproducible
+# from the sequence generator, never committed.
+/tests/Jcs/.numbers-cache/
+
+# Local reference material (downloaded RFCs) — not part of the package.
+/REFERENCES/
