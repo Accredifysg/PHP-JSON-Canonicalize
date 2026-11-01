@@ -106,6 +106,7 @@ through the full 100 000 000 values. They sit behind `JCS_NUMBER_LINES`
 because of their runtime (about two minutes and nineteen minutes
 respectively), not their result.
 
-The canonical output is frozen under SemVer: it is what Data Integrity's
-`ecdsa-jcs-2019` and `eddsa-jcs-2022` cryptosuites sign over, so changing it
-would invalidate every signature already issued.
+The canonical output is frozen under SemVer. JCS exists so these bytes can be
+hashed and signed — Data Integrity's `ecdsa-jcs-2019` and `eddsa-jcs-2022`
+cryptosuites are defined over exactly this serialization — so a change to it
+would invalidate any signature computed against it.
