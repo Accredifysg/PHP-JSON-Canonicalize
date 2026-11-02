@@ -46,6 +46,23 @@ final class JsonObject implements Countable, IteratorAggregate
     }
 
     /**
+     * Remove a member. Removing one that is not there is not an error — the
+     * postcondition is the same either way.
+     *
+     * The counterpart to {@see set()}, and what anything editing a parsed
+     * document before canonicalizing it needs. A signature scheme is the usual
+     * case: a Data Integrity proof is computed over the document with its
+     * `proof` member taken off, and over the proof options with the proof value
+     * taken off. Without this, dropping one name means round-tripping every
+     * other property through {@see set()} onto a fresh object, so the operation
+     * belongs here.
+     */
+    public function remove(string $name): void
+    {
+        unset($this->members[$name]);
+    }
+
+    /**
      * The members as a PHP array, keys unconverted.
      *
      * @return array<array-key, mixed>

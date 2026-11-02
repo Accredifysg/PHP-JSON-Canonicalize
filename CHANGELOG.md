@@ -7,6 +7,25 @@ adheres to [Semantic Versioning](https://semver.org/).
 > **The canonical output is part of the public API.** Signatures are computed
 > over these bytes, so a change to them is a major version bump — never a patch.
 
+## [1.1.0] — Unreleased
+
+### Added
+
+- `JsonObject::remove()` — drop a member from a parsed object. The counterpart
+  to `set()`, for anything that edits a parsed document before canonicalizing
+  it. The motivating case is a signature scheme: a Data Integrity proof is
+  computed over the document with its `proof` member taken off, and over the
+  proof options with the proof value taken off, so both halves need to remove
+  exactly one name from a tree whose object/array distinction has to survive.
+  Without it that means copying every other property onto a fresh object.
+
+  Removing a name that is not present is not an error, and a name PHP folds to
+  an integer key (`"10"`) or one beginning with a NUL byte is removed by the
+  name it came in under, like `has()` and `get()`.
+
+  Canonical output is unaffected: this adds an operation, it does not change
+  how any value serializes.
+
 ## [1.0.0] — 2026-10-31
 
 Initial release: RFC 8785 (JCS) canonicalization, conformant with the cyberphone
@@ -58,4 +77,5 @@ test vectors.
   exactly as written.
 - Nesting is bounded at 512 levels by default, matching `json_decode`.
 
+[1.1.0]: https://github.com/accredifysg/php-json-canonicalize/releases/tag/v1.1.0
 [1.0.0]: https://github.com/accredifysg/php-json-canonicalize/releases/tag/v1.0.0
