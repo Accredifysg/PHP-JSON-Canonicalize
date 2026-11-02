@@ -7,7 +7,7 @@ adheres to [Semantic Versioning](https://semver.org/).
 > **The canonical output is part of the public API.** Signatures are computed
 > over these bytes, so a change to them is a major version bump — never a patch.
 
-## [1.1.0] — Unreleased
+## [1.1.0] — 2026-11-02
 
 ### Added
 
