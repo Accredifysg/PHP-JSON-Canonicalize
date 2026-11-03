@@ -1,6 +1,6 @@
 # PHP-JSON-Canonicalize
 
-![CI](https://img.shields.io/github/actions/workflow/status/accredifysg/php-json-canonicalize/ci.yml?branch=main)
+[![CI](https://img.shields.io/github/actions/workflow/status/accredifysg/php-json-canonicalize/main.yml?branch=main)](https://github.com/Accredifysg/PHP-JSON-Canonicalize/actions/workflows/main.yml)
 ![Test coverage](coverage/badge.svg)
 ![Packagist Version](https://img.shields.io/packagist/v/accredifysg/php-json-canonicalize)
 ![PHP Version](https://img.shields.io/packagist/php-v/accredifysg/php-json-canonicalize)
