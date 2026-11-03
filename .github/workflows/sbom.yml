@@ -17,14 +17,14 @@ jobs:
         uses: anchore/sbom-action@66cbf4bc1f1c0d2edc94016e65bc221b6bb0ad6c #v0.24.3
         with:
           path: .
-          format: cyclonedx-json
+          format: cyclonedx-json@1.6
           output-file: source-bom.json
           upload-artifact: false
           upload-release-assets: false
 
       - name: Upload source SBOM to Dependency-Track
         run: |
-          curl -vsf -X POST "${{ secrets.DTRACK_URL }}/api/v1/bom" \
+          curl -vs --fail-with-body -X POST "${{ secrets.DTRACK_URL }}/api/v1/bom" \
             -H "X-Api-Key: ${{ secrets.DTRACK_API_KEY }}" \
             -F "autoCreate=true" \
             -F "projectName=${{ github.event.repository.name }}-Source" \
