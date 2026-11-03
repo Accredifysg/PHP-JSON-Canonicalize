@@ -4,7 +4,7 @@
 ![Test coverage](coverage/badge.svg)
 ![Packagist Version](https://img.shields.io/packagist/v/accredifysg/php-json-canonicalize)
 ![PHP Version](https://img.shields.io/packagist/php-v/accredifysg/php-json-canonicalize)
-![License](https://img.shields.io/packagist/l/accredifysg/php-json-canonicalize)
+[![License](https://img.shields.io/github/license/Accredifysg/PHP-JSON-Canonicalize)](LICENSE)
 ![JCS conformance](https://img.shields.io/badge/RFC%208785-conformant-brightgreen)
 
 A PHP implementation of the IETF
