@@ -99,6 +99,16 @@ cannot be `stdClass` — hence `JsonObject`.
 
 The suite **gates CI** — every case passes, no allowlist.
 
+It is also **published**, per case, at
+[jcs.ietf.reports.conformance.accredify.dev](https://jcs.ietf.reports.conformance.accredify.dev)
+by `.github/workflows/conformance-report.yml`, which runs this suite, hands
+the JUnit log to [`scripts/generate-conformance-report.php`](../../scripts/generate-conformance-report.php)
+and builds the site with [`scripts/build-report-site.sh`](../../scripts/build-report-site.sh).
+The generator counts the vectors in the submodule and refuses to emit a report
+whose case count disagrees with them — an uninitialised submodule otherwise
+yields zero cases, a clean exit, and a report claiming conformance against
+nothing.
+
 The four number checksums run by default cover the first 1 000, 10 000,
 100 000 and 1 000 000 values of the sequence. The two larger published
 prefixes pass as well — all six checksums in the suite's table are reproduced,

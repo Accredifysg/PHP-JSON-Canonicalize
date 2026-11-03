@@ -159,6 +159,14 @@ composer test:all          # both
 RFC 8785 is IETF, not W3C: there is no official test suite and no EARL report
 to file, so this is a self-reported score, reproducible with one command.
 
+The same score is published, per case and pinned to the suite revision it ran
+against, at
+[jcs.ietf.reports.conformance.accredify.dev](https://jcs.ietf.reports.conformance.accredify.dev)
+— rebuilt on every release and weekly, and indexed from
+[conformance.accredify.dev](https://conformance.accredify.dev) alongside the
+reports we do file with W3C. It says "self-reported" on its face, because
+nobody else checks it.
+
 Beyond the fixed vectors, [`tools/differential.js`](tools/differential.js)
 generates pseudo-random documents, canonicalizes them with the suite's own
 JavaScript implementation, and replays them through this one:

@@ -15,3 +15,11 @@ composer.lock
 
 # Local reference material (downloaded RFCs) — not part of the package.
 /REFERENCES/
+
+# Conformance report build output (scripts/build-report-site.sh). Generated
+# from a test run against the pinned suite, published to GitHub Pages by the
+# Conformance Report workflow — never committed. Unlike the sibling libraries,
+# there is no submission that needs a checked-in copy of the report.
+/site/
+/conformance-junit.xml
+/php-json-canonicalize-conformance.json
